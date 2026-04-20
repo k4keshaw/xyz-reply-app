@@ -22,6 +22,10 @@ A Next.js web app prototype for Vercel deployment.
 
 ⚙️ **Easy Deployment** - Deploy to Vercel with just 3 steps
 
+## Interactive Demo
+
+👉 **[View the interactive prototype](./public/demo.html)** — See how the slash command flow works across Twitter and LinkedIn. Step through the demo to understand the user experience.
+
 ## Deploy to Vercel (3 steps)
 
 ### 1. Push to GitHub

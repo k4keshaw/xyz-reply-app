@@ -1,0 +1,396 @@
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes popIn{from{opacity:0;transform:translateY(-8px) scale(0.95)}to{opacity:1;transform:none}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:none}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+@keyframes bounce{0%,80%,100%{transform:scale(0.5);opacity:0.3}40%{transform:scale(1);opacity:1}}
+@keyframes typeIn{from{width:0}to{width:100%}}
+@keyframes shimmer{0%{background-position:-200px 0}100%{background-position:200px 0}}
+@keyframes checkPop{0%{transform:scale(0)}60%{transform:scale(1.3)}100%{transform:scale(1)}}
+@keyframes ripple{0%{transform:scale(0);opacity:0.6}100%{transform:scale(2.5);opacity:0}}
+
+.scene{background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:20px;margin-bottom:16px}
+.phone-frame{width:320px;margin:0 auto;background:#0f0f13;border-radius:28px;border:2px solid rgba(255,255,255,0.12);overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.4)}
+.phone-bar{background:#1a1a22;padding:10px 16px 8px;display:flex;align-items:center;justify-content:space-between}
+.phone-title{font-size:13px;font-weight:500;color:#e8e8f0}
+.phone-dot{width:6px;height:6px;border-radius:50%;background:#534AB7}
+.phone-body{padding:14px;background:#0f0f13}
+
+.post-card{background:#1a1a22;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:12px;margin-bottom:10px}
+.post-header{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0}
+.av-blue{background:#1a3a5c;color:#85B7EB}
+.av-teal{background:#0a2e22;color:#5DCAA5}
+.post-name{font-size:12px;font-weight:500;color:#e8e8f0}
+.post-handle{font-size:10px;color:rgba(255,255,255,0.35)}
+.post-text{font-size:11.5px;line-height:1.55;color:rgba(255,255,255,0.75);margin-bottom:10px}
+.post-actions{display:flex;gap:14px;font-size:10px;color:rgba(255,255,255,0.3);border-top:1px solid rgba(255,255,255,0.06);padding-top:8px}
+
+.reply-row{display:flex;gap:8px;align-items:flex-start;position:relative}
+.reply-box{flex:1;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:8px 10px;font-size:11.5px;color:#e8e8f0;min-height:36px;cursor:text;transition:border-color 0.2s}
+.reply-box.focused{border-color:rgba(124,58,237,0.6);background:rgba(124,58,237,0.05)}
+.reply-btn{background:#7c3aed;border:none;border-radius:8px;color:#fff;font-size:10px;font-weight:600;padding:6px 10px;margin-top:2px;cursor:pointer;white-space:nowrap;flex-shrink:0}
+
+.slash-hint{display:inline-block;background:rgba(124,58,237,0.2);border:1px solid rgba(124,58,237,0.4);border-radius:4px;padding:0 5px;font-size:11px;font-family:monospace;color:#a78bfa;animation:pulse 1.5s infinite}
+
+.popup{background:#0d0d12;border:1px solid rgba(255,255,255,0.1);border-radius:14px;overflow:hidden;margin-top:8px;animation:popIn 0.2s cubic-bezier(0.22,1,0.36,1)}
+.popup-head{display:flex;align-items:center;justify-content:space-between;padding:9px 12px 8px;border-bottom:1px solid rgba(255,255,255,0.06)}
+.popup-logo{font-size:11px;font-weight:600;color:#a78bfa;letter-spacing:0.04em}
+.popup-badge{font-size:8px;background:rgba(167,139,250,0.15);color:#a78bfa;border:1px solid rgba(167,139,250,0.25);padding:1px 5px;border-radius:99px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase}
+.popup-close{font-size:10px;color:rgba(255,255,255,0.25);cursor:pointer;padding:1px 4px;border-radius:3px}
+.popup-input-row{display:flex;gap:6px;padding:8px 10px 7px;border-bottom:1px solid rgba(255,255,255,0.05)}
+.popup-input{flex:1;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);border-radius:7px;padding:5px 9px;font-size:10.5px;color:#e8e8f0}
+.popup-gen{background:linear-gradient(135deg,#6d28d9,#a78bfa);border:none;border-radius:7px;color:#fff;font-size:10.5px;font-weight:600;padding:5px 10px;cursor:pointer;white-space:nowrap}
+.popup-body{padding:7px 8px 8px;display:flex;flex-direction:column;gap:5px}
+
+.suggestion{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:9px;padding:8px 9px;cursor:pointer;transition:all 0.15s;position:relative;overflow:hidden}
+.suggestion:hover{background:rgba(124,58,237,0.1);border-color:rgba(124,58,237,0.25)}
+.suggestion.entering{animation:slideIn 0.25s ease both}
+.sug-label{font-size:8.5px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:#a78bfa;margin-bottom:3px}
+.sug-text{font-size:10.5px;line-height:1.45;color:#c4c4d4;margin-bottom:6px}
+.sug-use{font-size:9.5px;font-weight:600;color:#a78bfa;background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.25);border-radius:4px;padding:2px 7px;cursor:pointer;display:inline-block}
+
+.loader{display:flex;align-items:center;justify-content:center;gap:5px;padding:14px 0}
+.loader span{width:5px;height:5px;border-radius:50%;background:#a78bfa;animation:bounce 0.9s infinite ease-in-out}
+
+.used-text{font-size:11px;color:#e8e8f0;line-height:1.5;animation:fadeUp 0.3s ease}
+.check-ring{width:18px;height:18px;border-radius:50%;background:rgba(29,158,117,0.2);border:1px solid #1D9E75;display:inline-flex;align-items:center;justify-content:center;margin-right:6px;animation:checkPop 0.3s ease}
+
+.step-indicator{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:14px}
+.step-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.15);transition:all 0.3s;cursor:pointer}
+.step-dot.active{background:#a78bfa;transform:scale(1.2)}
+.step-dot.done{background:#1D9E75}
+
+.tab-row{display:flex;gap:6px;margin-bottom:14px}
+.tab-btn{padding:5px 14px;border-radius:20px;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);color:var(--color-text-secondary);font-size:12px;cursor:pointer;transition:all 0.15s}
+.tab-btn.active{background:var(--color-background-primary);color:var(--color-text-primary);border-color:var(--color-border-primary);font-weight:500}
+
+.platform-label{font-size:11px;color:var(--color-text-secondary);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.platform-label b{color:var(--color-text-primary);font-weight:500}
+
+.ctrl-row{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:12px}
+.ctrl-btn{background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:5px 14px;font-size:12px;color:var(--color-text-primary);cursor:pointer;transition:all 0.15s}
+.ctrl-btn:hover{background:var(--color-background-secondary)}
+.ctrl-btn.primary{background:#7c3aed;color:#fff;border-color:#7c3aed}
+.ctrl-btn.primary:hover{background:#6d28d9}
+.replay-btn{font-size:11px;color:var(--color-text-secondary);cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+</style>
+
+<h2 class="sr-only">Animated interactive prototype of Claude Reply Suggester showing slash command flow on Twitter and LinkedIn</h2>
+
+<div class="tab-row">
+  <button class="tab-btn active" onclick="switchPlatform('twitter',this)">Twitter / X</button>
+  <button class="tab-btn" onclick="switchPlatform('linkedin',this)">LinkedIn</button>
+</div>
+
+<div class="scene">
+  <div class="step-indicator" id="steps">
+    <div class="step-dot active" onclick="goStep(0)" title="Step 1"></div>
+    <div class="step-dot" onclick="goStep(1)" title="Step 2"></div>
+    <div class="step-dot" onclick="goStep(2)" title="Step 3"></div>
+    <div class="step-dot" onclick="goStep(3)" title="Step 4"></div>
+  </div>
+
+  <div class="phone-frame">
+    <div class="phone-bar">
+      <div class="phone-dot"></div>
+      <div class="phone-title" id="phone-title">Twitter / X</div>
+      <div style="width:6px"></div>
+    </div>
+    <div class="phone-body" id="phone-body"></div>
+  </div>
+
+  <div class="ctrl-row">
+    <button class="ctrl-btn" onclick="prevStep()">← Back</button>
+    <button class="ctrl-btn primary" id="next-btn" onclick="nextStep()">Next →</button>
+    <span class="replay-btn" onclick="goStep(0)">Replay</span>
+  </div>
+</div>
+
+<script>
+const PLATFORMS = {
+  twitter: {
+    label: "Twitter / X",
+    postName: "XYZ Corp",
+    postHandle: "@xyzcorp · 2h",
+    avClass: "av-blue",
+    avText: "XY",
+    postText: "Just shipped our biggest product update ever. Three months of work, zero sleep, and one very patient team. Proud doesn't even cover it.",
+    actions: ["reply 47","retweet 124","like 891"],
+    replyBtn: "Reply",
+    inputPlaceholder: "Type your reply…",
+    suggestions: [
+      {label:"Professional", text:"Massive congrats to XYZ Corp! Shipping something this big takes real dedication — enjoy this moment."},
+      {label:"Casual", text:"Three months, zero sleep and still shipped?? XYZ Corp went off. Huge congrats! 🎉"},
+      {label:"Witty", text:"Zero sleep, full ship. XYZ Corp doing the most — congrats to the team! 🚀"},
+    ]
+  },
+  linkedin: {
+    label: "LinkedIn",
+    postName: "XYZ",
+    postHandle: "Product Lead at XYZ Corp · 1st",
+    avClass: "av-teal",
+    avText: "XY",
+    postText: "Excited to share that XYZ Corp just crossed 1M users! Listening to your users beats every internal assumption. What's the best product feedback you've ever received?",
+    actions: ["like","comment","repost","send"],
+    replyBtn: "Post",
+    inputPlaceholder: "Add a comment…",
+    suggestions: [
+      {label:"Professional", text:"Congratulations XYZ Corp on 1M users — a true testament to your customer focus."},
+      {label:"Casual", text:"1M users is massive — congrats XYZ! Best feedback always stings but moves the needle."},
+      {label:"Witty", text:"XYZ Corp hitting 1M — love it! Best feedback I got: 'I use it despite the UX.' Stung, shipped."},
+    ]
+  }
+};
+
+let platform = "twitter";
+let step = 0;
+let chosenReply = "";
+
+function switchPlatform(p, el) {
+  platform = p;
+  document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+  el.classList.add("active");
+  document.getElementById("phone-title").textContent = PLATFORMS[p].label;
+  goStep(0);
+}
+
+function getP() { return PLATFORMS[platform]; }
+
+function renderStep0() {
+  const p = getP();
+  return `
+    <div class="post-card" style="animation:fadeUp 0.3s ease">
+      <div class="post-header">
+        <div class="av ${p.avClass}">${p.avText}</div>
+        <div><div class="post-name">${p.postName}</div><div class="post-handle">${p.postHandle}</div></div>
+      </div>
+      <div class="post-text">${p.postText}</div>
+      <div class="post-actions">${p.actions.map(a=>`<span>${a}</span>`).join("")}</div>
+    </div>
+    <div class="reply-row">
+      <div class="av av-teal" style="width:28px;height:28px;font-size:9px;margin-top:4px">XZ</div>
+      <div style="flex:1">
+        <div class="reply-box" style="color:rgba(255,255,255,0.25)">${p.inputPlaceholder} (type <span class="slash-hint">/</span> for Claude)</div>
+      </div>
+      <button class="reply-btn">${p.replyBtn}</button>
+    </div>
+    <div style="text-align:center;margin-top:10px;font-size:10px;color:rgba(255,255,255,0.25)">Step 1 of 4 — tap the comment box</div>
+  `;
+}
+
+function renderStep1() {
+  const p = getP();
+  return `
+    <div class="post-card">
+      <div class="post-header">
+        <div class="av ${p.avClass}">${p.avText}</div>
+        <div><div class="post-name">${p.postName}</div><div class="post-handle">${p.postHandle}</div></div>
+      </div>
+      <div class="post-text">${p.postText}</div>
+      <div class="post-actions">${p.actions.map(a=>`<span>${a}</span>`).join("")}</div>
+    </div>
+    <div class="reply-row">
+      <div class="av av-teal" style="width:28px;height:28px;font-size:9px;margin-top:4px">XZ</div>
+      <div style="flex:1">
+        <div class="reply-box focused" style="animation:fadeUp 0.2s ease">
+          <span id="typed-text"></span><span style="animation:pulse 0.8s infinite;color:#a78bfa">|</span>
+        </div>
+      </div>
+      <button class="reply-btn">${p.replyBtn}</button>
+    </div>
+    <div style="text-align:center;margin-top:10px;font-size:10px;color:rgba(255,255,255,0.25)">Step 2 of 4 — typing /</div>
+  `;
+}
+
+function renderStep2() {
+  const p = getP();
+  return `
+    <div class="post-card">
+      <div class="post-header">
+        <div class="av ${p.avClass}">${p.avText}</div>
+        <div><div class="post-name">${p.postName}</div><div class="post-handle">${p.postHandle}</div></div>
+      </div>
+      <div class="post-text">${p.postText}</div>
+      <div class="post-actions">${p.actions.map(a=>`<span>${a}</span>`).join("")}</div>
+    </div>
+    <div class="reply-row">
+      <div class="av av-teal" style="width:28px;height:28px;font-size:9px;margin-top:4px">XZ</div>
+      <div style="flex:1">
+        <div class="reply-box focused"><span style="color:#a78bfa;font-weight:600">/</span></div>
+        <div class="popup">
+          <div class="popup-head">
+            <div style="display:flex;align-items:center;gap:6px">
+              <span class="popup-logo">✦ Claude</span>
+              <span class="popup-badge">Demo</span>
+            </div>
+            <span class="popup-close">✕</span>
+          </div>
+          <div class="popup-input-row">
+            <div class="popup-input" style="color:rgba(255,255,255,0.25);font-size:10px">Instructions… e.g. make it funny</div>
+            <button class="popup-gen">Generate</button>
+          </div>
+          <div class="popup-body">
+            <div class="loader">
+              <span style="animation-delay:0ms"></span>
+              <span style="animation-delay:150ms"></span>
+              <span style="animation-delay:300ms"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="reply-btn">${p.replyBtn}</button>
+    </div>
+    <div style="text-align:center;margin-top:8px;font-size:10px;color:rgba(255,255,255,0.25)">Step 3 of 4 — Claude generating...</div>
+  `;
+}
+
+function renderStep3() {
+  const p = getP();
+  const suggs = p.suggestions;
+  chosenReply = suggs[0].text;
+  return `
+    <div class="post-card">
+      <div class="post-header">
+        <div class="av ${p.avClass}">${p.avText}</div>
+        <div><div class="post-name">${p.postName}</div><div class="post-handle">${p.postHandle}</div></div>
+      </div>
+      <div class="post-text">${p.postText}</div>
+      <div class="post-actions">${p.actions.map(a=>`<span>${a}</span>`).join("")}</div>
+    </div>
+    <div class="reply-row">
+      <div class="av av-teal" style="width:28px;height:28px;font-size:9px;margin-top:4px">XZ</div>
+      <div style="flex:1">
+        <div class="reply-box focused" id="final-box"><span style="color:#a78bfa">/</span></div>
+        <div class="popup">
+          <div class="popup-head">
+            <div style="display:flex;align-items:center;gap:6px">
+              <span class="popup-logo">✦ Claude</span>
+              <span class="popup-badge">Demo</span>
+            </div>
+            <span class="popup-close" onclick="closePopup()">✕</span>
+          </div>
+          <div class="popup-input-row">
+            <div class="popup-input" style="color:rgba(255,255,255,0.25);font-size:10px">Instructions… e.g. make it funny</div>
+            <button class="popup-gen">Generate</button>
+          </div>
+          <div class="popup-body" id="sug-body">
+            ${suggs.map((s,i)=>`
+              <div class="suggestion entering" style="animation-delay:${i*80}ms" onclick="useReply(${i})">
+                <div class="sug-label">${s.label}</div>
+                <div class="sug-text">${s.text}</div>
+                <span class="sug-use">Use this ↗</span>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+      </div>
+      <button class="reply-btn">${p.replyBtn}</button>
+    </div>
+    <div style="text-align:center;margin-top:8px;font-size:10px;color:rgba(255,255,255,0.25)">Step 4 of 4 — pick a suggestion</div>
+  `;
+}
+
+function renderDone() {
+  const p = getP();
+  return `
+    <div class="post-card">
+      <div class="post-header">
+        <div class="av ${p.avClass}">${p.avText}</div>
+        <div><div class="post-name">${p.postName}</div><div class="post-handle">${p.postHandle}</div></div>
+      </div>
+      <div class="post-text">${p.postText}</div>
+      <div class="post-actions">${p.actions.map(a=>`<span>${a}</span>`).join("")}</div>
+    </div>
+    <div class="reply-row" style="animation:fadeUp 0.3s ease">
+      <div class="av av-teal" style="width:28px;height:28px;font-size:9px;margin-top:4px">XZ</div>
+      <div style="flex:1">
+        <div class="reply-box focused used-text">${chosenReply}</div>
+      </div>
+      <button class="reply-btn" style="background:#1D9E75">${p.replyBtn}</button>
+    </div>
+    <div style="text-align:center;margin-top:10px;font-size:10.5px;color:#1D9E75;display:flex;align-items:center;justify-content:center;gap:4px;animation:fadeUp 0.4s 0.1s both">
+      <span class="check-ring" style="width:14px;height:14px;font-size:9px">✓</span>
+      Reply filled in — just tap ${p.replyBtn}!
+    </div>
+  `;
+}
+
+function useReply(i) {
+  chosenReply = getP().suggestions[i].text;
+  const box = document.getElementById("final-box");
+  const sugBody = document.getElementById("sug-body");
+  if (box) box.innerHTML = `<span class="used-text">${chosenReply}</span>`;
+  if (sugBody) {
+    sugBody.innerHTML = `<div style="text-align:center;padding:10px 0;font-size:10.5px;color:#1D9E75;animation:fadeUp 0.25s ease"><span class="check-ring" style="width:14px;height:14px;font-size:8px">✓</span> Inserted!</div>`;
+    setTimeout(() => { step = 4; renderCurrent(); }, 900);
+  }
+}
+
+function closePopup() {
+  step = 4;
+  renderCurrent();
+}
+
+const renders = [renderStep0, renderStep1, renderStep2, renderStep3];
+
+function renderCurrent() {
+  const body = document.getElementById("phone-body");
+  if (step === 4) {
+    body.innerHTML = renderDone();
+  } else {
+    body.innerHTML = renders[step]();
+    if (step === 1) animateTyping();
+    if (step === 2) setTimeout(() => { step = 3; renderCurrent(); }, 1600);
+  }
+  updateStepDots();
+  updateNextBtn();
+}
+
+function animateTyping() {
+  const el = document.getElementById("typed-text");
+  if (!el) return;
+  const chars = ["m","a","k","e"," ","i","t"," ","f","u","n","n","y"];
+  let i = 0;
+  const t = setInterval(() => {
+    if (!document.getElementById("typed-text")) { clearInterval(t); return; }
+    el.textContent += chars[i] || "";
+    i++;
+    if (i >= chars.length) clearInterval(t);
+  }, 90);
+}
+
+function updateStepDots() {
+  const dots = document.querySelectorAll(".step-dot");
+  dots.forEach((d, i) => {
+    d.classList.remove("active","done");
+    const s = Math.min(step, 3);
+    if (i < s) d.classList.add("done");
+    else if (i === s) d.classList.add("active");
+  });
+}
+
+function updateNextBtn() {
+  const btn = document.getElementById("next-btn");
+  if (step >= 3) { btn.textContent = "Done ✓"; btn.style.background = "#1D9E75"; btn.style.borderColor = "#1D9E75"; }
+  else { btn.textContent = "Next →"; btn.style.background = "#7c3aed"; btn.style.borderColor = "#7c3aed"; }
+}
+
+function nextStep() {
+  if (step < 3) { step++; renderCurrent(); }
+  else { goStep(0); }
+}
+
+function prevStep() {
+  if (step > 0) { step--; renderCurrent(); }
+}
+
+function goStep(s) {
+  step = s;
+  renderCurrent();
+}
+
+goStep(0);
+</script>
