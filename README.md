@@ -2,6 +2,26 @@
 
 A Next.js web app prototype for Vercel deployment.
 
+## Demo Preview
+
+**Claude Reply Suggester** is an AI-powered tool that helps you craft better responses across social platforms:
+
+- 🤖 **AI-Powered Suggestions** - Uses Claude to generate smart reply suggestions
+- 🔗 **LinkedIn Integration** - View and suggest replies to LinkedIn posts
+- 𝕏 **Twitter Integration** - Generate thoughtful responses to tweets
+- ⚡ **Real-time Generation** - Get suggestions instantly with streaming responses
+- 🎨 **Clean Interface** - Modern popup-based UI for seamless interaction
+
+### Features
+
+✨ **Smart Reply Suggestions** - Let Claude analyze context and suggest professional, engaging responses
+
+📝 **Multi-Platform Support** - Works with both LinkedIn and Twitter content
+
+🔐 **API-Driven** - Secure backend API integration with Anthropic's Claude model
+
+⚙️ **Easy Deployment** - Deploy to Vercel with just 3 steps
+
 ## Deploy to Vercel (3 steps)
 
 ### 1. Push to GitHub
